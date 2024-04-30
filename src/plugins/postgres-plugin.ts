@@ -1,7 +1,11 @@
 import "reflect-metadata"
 import fp from 'fastify-plugin'
 import { DataSource } from 'typeorm'
-import { User } from "../db/entities/User"
+import User from "../db/entities/User"
+import Team from "../db/entities/Team"
+import Role from "../db/entities/Role"
+import Project from "../db/entities/Project"
+import Task from "../db/entities/Task"
 
 const postgresPlugin = fp(async (fastify) => {
   const datasource = new DataSource({
@@ -11,10 +15,10 @@ const postgresPlugin = fp(async (fastify) => {
     username: fastify.config.POSTGRES_USER,
     password: fastify.config.POSTGRES_PASSWORD,
     database: fastify.config.POSTGRES_DATABASE,
+    ssl: fastify.config.POSTGRES_SSL_REQUIRED,
     synchronize: true, // TODO: update to only on dev mode
     logging: false,
-    entities: [User],
-    ssl: false,
+    entities: [User, Team, Project, Task, Role],
     migrations: [],
     subscribers: [],
   })

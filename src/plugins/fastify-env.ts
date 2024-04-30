@@ -8,6 +8,7 @@ export interface EnvConfig {
   POSTGRES_USER: string
   POSTGRES_PASSWORD: string
   POSTGRES_DATABASE: string
+  POSTGRES_SSL_REQUIRED: boolean
 }
 
 const fastifyEnvPlugin = fp(async (fastify) => {
@@ -38,6 +39,10 @@ const fastifyEnvPlugin = fp(async (fastify) => {
         type: 'string',
         default: 'playground'
       },
+      POSTGRES_SSL_REQUIRED: {
+        type: 'boolean',
+        default: false
+      }
     },
     required: ['PORT', 'POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_DATABASE']
   }
