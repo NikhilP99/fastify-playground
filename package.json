@@ -7,14 +7,18 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typeorm": "typeorm-ts-node-commonjs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@fastify/env": "^4.3.0",
     "fastify": "^4.26.2",
-    "fastify-plugin": "^4.5.1"
+    "fastify-plugin": "^4.5.1",
+    "pg": "^8.4.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "0.3.20"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
