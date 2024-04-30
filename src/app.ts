@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify'
 import fastifyEnvPlugin, { EnvConfig } from './plugins/fastify-env'
+import healthRoutes from './modules/health/health.routes';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -13,10 +14,12 @@ const buildApp = async (): Promise<FastifyInstance> => {
   // Load environment variables first
   await app.register(fastifyEnvPlugin)
 
-  // Register other plugins
-  app.get('/ping', async (request, reply) => {
-    reply.send("pong")
-  })
+  // Register DB
+
+  // Register services
+
+  // Register routes
+  app.register(healthRoutes, { prefix: '/health' })
 
   return app
 }
