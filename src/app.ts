@@ -5,16 +5,21 @@ import fastifyEnvPlugin, { EnvConfig } from './plugins/fastify-env'
 import postgresPlugin from './plugins/postgres-plugin';
 
 import healthRoutes from './modules/health/health.routes';
+import userRoutes from './modules/user/user.routes';
+import UserService from './modules/user/user.service';
 
 declare module 'fastify' {
   interface FastifyInstance {
     config: EnvConfig;
-    db: DataSource
+    db: DataSource;
+    userService: UserService;
   }
 }
 
 const buildApp = async (): Promise<FastifyInstance> => {
-  const app = fastify()
+  const app = fastify({
+    logger: true
+  })
 
   // Load environment variables first
   await app.register(fastifyEnvPlugin)
@@ -22,10 +27,12 @@ const buildApp = async (): Promise<FastifyInstance> => {
   // Register DB
   await app.register(postgresPlugin)
 
-  // Register services
+  // decorate services
+  app.decorate('userService', new UserService(app.db))
 
   // Register routes
   app.register(healthRoutes, { prefix: '/health' })
+  app.register(userRoutes, { prefix: '/user' })
 
   return app
 }

@@ -18,7 +18,9 @@
     "fastify-plugin": "^4.5.1",
     "pg": "^8.4.0",
     "reflect-metadata": "^0.1.13",
-    "typeorm": "0.3.20"
+    "typeorm": "0.3.20",
+    "zod": "^3.23.5",
+    "zod-to-json-schema": "^3.23.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
