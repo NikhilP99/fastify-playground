@@ -16,7 +16,7 @@ const postgresPlugin = fp(async (fastify) => {
     password: fastify.config.POSTGRES_PASSWORD,
     database: fastify.config.POSTGRES_DATABASE,
     ssl: fastify.config.POSTGRES_SSL_REQUIRED,
-    synchronize: true, // TODO: update to only on dev mode
+    synchronize: false, // TODO: update to only on dev mode
     logging: false,
     entities: [User, Team, Project, Task, Role],
     migrations: [],

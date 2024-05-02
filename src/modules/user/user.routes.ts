@@ -9,7 +9,7 @@ const userRoutes = async (app: FastifyInstance) => {
       body: IUserLoginRequestSchema
     },
     handler: async (request, reply) => {
-      const loginResponse = loginUser(app, request.body);
+      const loginResponse = await loginUser(app, request.body);
       return reply.status(200).send(loginResponse);
     },
   });
