@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify'
 import { DataSource } from 'typeorm';
+import fjwt from '@fastify/jwt'
 
 import fastifyEnvPlugin, { EnvConfig } from './plugins/fastify-env'
 import postgresPlugin from './plugins/postgres-plugin';
@@ -26,6 +27,11 @@ const buildApp = async (): Promise<FastifyInstance> => {
 
   // Register DB
   await app.register(postgresPlugin)
+  
+  // Register plugins
+  await app.register(fjwt, {
+    secret: app.config.JWT_SECRET
+  })
 
   // decorate services
   app.decorate('userService', new UserService(app.db))

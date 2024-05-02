@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { IUserLoginRequestBody, IUserRegisterRequestBody } from "./user.schema";
+import { IUserLoginRequestBody, IUserLoginResponseBody, IUserRegisterRequestBody, IUserRegisterResponseBody } from "./user.schema";
 import User from "../../db/entities/User";
 import { InvalidRequestError, UnauthorizedRequestError } from "../../errors/errors";
 
-export const registerUser = async (app: FastifyInstance, user: IUserRegisterRequestBody) => {
+export const registerUser = async (app: FastifyInstance, user: IUserRegisterRequestBody) : Promise<IUserRegisterResponseBody> => {
   const userExists: boolean = await app.userService.userExists(user.email)
   if(userExists){
     throw new InvalidRequestError(`User - ${user.email} already exists.`)    
@@ -15,10 +15,14 @@ export const registerUser = async (app: FastifyInstance, user: IUserRegisterRequ
   userEntity.first_name = user.firstName
   userEntity.last_name = user.lastName
 
-  return await app.userService.saveUser(userEntity)
+  const savedUser = await app.userService.saveUser(userEntity)
+  return {
+    success: true,
+    message: `User ${savedUser.email} successfully registered!`
+  }
 }
 
-export const loginUser = async (app: FastifyInstance, loginRequest: IUserLoginRequestBody) => {
+export const loginUser = async (app: FastifyInstance, loginRequest: IUserLoginRequestBody): Promise<IUserLoginResponseBody> => {
   const email = loginRequest.email.trim().toLowerCase();
   const user = await app.userService.getUserByEmail(email);
   if(!user){
@@ -28,6 +32,18 @@ export const loginUser = async (app: FastifyInstance, loginRequest: IUserLoginRe
   if(user.password !== loginRequest.password){
     throw new UnauthorizedRequestError(`Incorrect email or password`)
   }
+  
+  const accessToken = app.jwt.sign({
+    issuer: 'playground',
+    user: user.email,
+    role: user.role
+  },{
+    expiresIn: '1d',
+  })
 
-  return user;
+  return {
+    success: true,
+    accessToken,
+    expiresIn: '1d'
+  };
 }

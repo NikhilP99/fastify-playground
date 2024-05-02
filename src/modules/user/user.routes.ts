@@ -1,12 +1,13 @@
 import { FastifyInstance, RouteGenericInterface } from "fastify";
-import { IUserLoginRequestBody, IUserLoginRequestSchema, IUserRegisterRequestBody, IUserRegisterRequestSchema } from "./user.schema";
+import { IUserLoginRequestBody, IUserLoginRequestSchema, IUserLoginResponseBody, IUserLoginResponseSchema, IUserRegisterRequestBody, IUserRegisterRequestSchema, IUserRegisterResponseBody, IUserRegisterResponseSchema } from "./user.schema";
 import { loginUser, registerUser } from "./user.controller";
 
 const userRoutes = async (app: FastifyInstance) => {
 
   app.post<UserLoginRequest>('/v1/login', {
     schema: {
-      body: IUserLoginRequestSchema
+      body: IUserLoginRequestSchema,
+      response: IUserLoginResponseSchema
     },
     handler: async (request, reply) => {
       const loginResponse = await loginUser(app, request.body);
@@ -16,7 +17,8 @@ const userRoutes = async (app: FastifyInstance) => {
 
   app.post<UserRegisterRequest>('/v1/register', {
     schema: {
-      body: IUserRegisterRequestSchema
+      body: IUserRegisterRequestSchema,
+      response: IUserRegisterResponseSchema
     },
     handler: async (request, reply) => {
       const registerResponse = await registerUser(app, request.body);
@@ -28,10 +30,12 @@ const userRoutes = async (app: FastifyInstance) => {
 
 interface UserLoginRequest extends RouteGenericInterface {
   Body: IUserLoginRequestBody
+  Reply: IUserLoginResponseBody
 }
 
 interface UserRegisterRequest extends RouteGenericInterface {
   Body: IUserRegisterRequestBody
+  Reply: IUserRegisterResponseBody
 }
 
 export default userRoutes;
