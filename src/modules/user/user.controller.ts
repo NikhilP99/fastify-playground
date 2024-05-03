@@ -11,7 +11,7 @@ export const registerUser = async (app: FastifyInstance, user: IUserRegisterRequ
 
   const userEntity = new User()
   userEntity.email = user.email.trim().toLowerCase()
-  userEntity.password = user.password
+  userEntity.password = user.password  // TODO: encrypt password
   userEntity.first_name = user.firstName
   userEntity.last_name = user.lastName
 
@@ -29,6 +29,7 @@ export const loginUser = async (app: FastifyInstance, loginRequest: IUserLoginRe
     throw new InvalidRequestError(`User - ${email} doesn't exist.`)    
   }
 
+  // TODO: encrypted check
   if(user.password !== loginRequest.password){
     throw new UnauthorizedRequestError(`Incorrect email or password`)
   }

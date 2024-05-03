@@ -7,7 +7,9 @@ const userRoutes = async (app: FastifyInstance) => {
   app.post<UserLoginRequest>('/v1/login', {
     schema: {
       body: IUserLoginRequestSchema,
-      response: IUserLoginResponseSchema
+      response: {
+        200: IUserLoginResponseSchema
+      }
     },
     handler: async (request, reply) => {
       const loginResponse = await loginUser(app, request.body);
@@ -18,7 +20,9 @@ const userRoutes = async (app: FastifyInstance) => {
   app.post<UserRegisterRequest>('/v1/register', {
     schema: {
       body: IUserRegisterRequestSchema,
-      response: IUserRegisterResponseSchema
+      response: {
+        200: IUserRegisterResponseSchema
+      }
     },
     handler: async (request, reply) => {
       const registerResponse = await registerUser(app, request.body);

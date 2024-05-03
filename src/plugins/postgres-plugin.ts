@@ -6,6 +6,7 @@ import Team from "../db/entities/Team"
 import Role from "../db/entities/Role"
 import Project from "../db/entities/Project"
 import Task from "../db/entities/Task"
+import Permission from "../db/entities/Permission"
 
 const postgresPlugin = fp(async (fastify) => {
   const datasource = new DataSource({
@@ -16,9 +17,9 @@ const postgresPlugin = fp(async (fastify) => {
     password: fastify.config.POSTGRES_PASSWORD,
     database: fastify.config.POSTGRES_DATABASE,
     ssl: fastify.config.POSTGRES_SSL_REQUIRED,
-    synchronize: false, // TODO: update to only on dev mode
+    synchronize: true, // TODO: update to only on dev mode
     logging: false,
-    entities: [User, Team, Project, Task, Role],
+    entities: [User, Team, Project, Task, Role, Permission],
     migrations: [],
     subscribers: [],
   })
