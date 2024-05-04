@@ -17,8 +17,11 @@ export default class UserService {
   }
 
   public getUserByEmail = async (email: string): Promise<User | null> => {
-    return await this.userRepository.findOneBy({
-      email: email
+    return await this.userRepository.findOne({
+      where: {
+        email: email
+      },
+      relations: ['role']
     })
   }
   

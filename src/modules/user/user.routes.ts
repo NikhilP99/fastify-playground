@@ -1,6 +1,6 @@
 import { FastifyInstance, RouteGenericInterface } from "fastify";
-import { IUserLoginRequestBody, IUserLoginRequestSchema, IUserLoginResponseBody, IUserLoginResponseSchema, IUserRegisterRequestBody, IUserRegisterRequestSchema, IUserRegisterResponseBody, IUserRegisterResponseSchema } from "./user.schema";
-import { loginUser, registerUser } from "./user.controller";
+import { IUserGetParams, IUserGetRequestParamsSchema, IUserGetResponseBody, IUserGetResponseSchema, IUserLoginRequestBody, IUserLoginRequestSchema, IUserLoginResponseBody, IUserLoginResponseSchema, IUserRegisterRequestBody, IUserRegisterRequestSchema, IUserRegisterResponseBody, IUserRegisterResponseSchema, IUserUpdateRequestBody, IUserUpdateRequestSchema, IUserUpdateResponseBody, IUserUpdateResponseSchema, IUserUpdateRoleRequestBody, IUserUpdateRoleRequestSchema, IUserUpdateRoleResponseBody, IUserUpdateRoleResponseSchema } from "./user.schema";
+import { getUser, loginUser, registerUser, updateUserData, updateUserRole } from "./user.controller";
 
 const userRoutes = async (app: FastifyInstance) => {
 
@@ -30,6 +30,46 @@ const userRoutes = async (app: FastifyInstance) => {
     },
   });
 
+  app.get<UserGetRequest>('/v1/:email', {
+    schema: {
+      params: IUserGetRequestParamsSchema,
+      response: {
+        200: IUserGetResponseSchema
+      }
+    },
+    handler: async (request, reply) => {
+      const { email } = request.params
+      const registerResponse = await getUser(app, email);
+      return reply.status(200).send(registerResponse);
+    },
+  });
+
+  app.put<UserUpdateRequest>('/v1/update', {
+    schema: {
+      body: IUserUpdateRequestSchema,
+      response: {
+        200: IUserUpdateResponseSchema
+      }
+    },
+    handler: async (request, reply) => {
+      const registerResponse = await updateUserData(app, request.body);
+      return reply.status(200).send(registerResponse);
+    },
+  });
+
+  app.put<UserUpdateRoleRequest>('/v1/update/role', {
+    schema: {
+      body: IUserUpdateRoleRequestSchema,
+      response: {
+        200: IUserUpdateRoleResponseSchema
+      }
+    },
+    handler: async (request, reply) => {
+      const registerResponse = await updateUserRole(app, request.body);
+      return reply.status(200).send(registerResponse);
+    },
+  });
+
 }
 
 interface UserLoginRequest extends RouteGenericInterface {
@@ -42,4 +82,18 @@ interface UserRegisterRequest extends RouteGenericInterface {
   Reply: IUserRegisterResponseBody
 }
 
+interface UserGetRequest extends RouteGenericInterface {
+  Params: IUserGetParams
+  Reply: IUserGetResponseBody
+}
+
+interface UserUpdateRequest extends RouteGenericInterface {
+  Body: IUserUpdateRequestBody
+  Reply: IUserUpdateResponseBody
+}
+
+interface UserUpdateRoleRequest extends RouteGenericInterface {
+  Body: IUserUpdateRoleRequestBody
+  Reply: IUserUpdateRoleResponseBody
+}
 export default userRoutes;

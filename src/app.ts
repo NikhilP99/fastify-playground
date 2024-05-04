@@ -8,12 +8,14 @@ import postgresPlugin from './plugins/postgres-plugin';
 import healthRoutes from './modules/health/health.routes';
 import userRoutes from './modules/user/user.routes';
 import UserService from './modules/user/user.service';
+import RoleService from './modules/role/role.service';
 
 declare module 'fastify' {
   interface FastifyInstance {
     config: EnvConfig;
     db: DataSource;
     userService: UserService;
+    roleService: RoleService;
   }
 }
 
@@ -35,6 +37,7 @@ const buildApp = async (): Promise<FastifyInstance> => {
 
   // decorate services
   app.decorate('userService', new UserService(app.db))
+  app.decorate('roleService', new RoleService(app.db))
 
   // Register routes
   app.register(healthRoutes, { prefix: '/health' })
