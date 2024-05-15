@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import buildApp from "./app";
+import { initRoles } from "./lib/roles";
 
 const startApp = async () => {
   const app: FastifyInstance = await buildApp()
@@ -9,6 +10,8 @@ const startApp = async () => {
       process.exit(1);
     }
     console.log(`Playground live on port - ${app.config.PORT}`)
+    
+    initRoles(app)
   });
 }
 

@@ -9,6 +9,7 @@ import healthRoutes from './modules/health/health.routes';
 import userRoutes from './modules/user/user.routes';
 import UserService from './modules/user/user.service';
 import RoleService from './modules/role/role.service';
+import PermissionService from './modules/permission/permission.service';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -16,6 +17,7 @@ declare module 'fastify' {
     db: DataSource;
     userService: UserService;
     roleService: RoleService;
+    permissionService: PermissionService;
   }
 }
 
@@ -38,6 +40,7 @@ const buildApp = async (): Promise<FastifyInstance> => {
   // decorate services
   app.decorate('userService', new UserService(app.db))
   app.decorate('roleService', new RoleService(app.db))
+  app.decorate('permissionService', new PermissionService(app.db))
 
   // Register routes
   app.register(healthRoutes, { prefix: '/health' })

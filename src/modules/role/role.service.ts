@@ -21,4 +21,15 @@ export default class RoleService {
     })
   }
 
+  public saveIfNotExists = async (roleName: string): Promise<Role> => {
+    let role = await this.findRole(roleName);
+    if(!role){
+      const newRole = new Role()
+      newRole.name = roleName;
+      role = await this.saveRole(newRole)
+    }
+
+    return role;
+  }
+
 }
