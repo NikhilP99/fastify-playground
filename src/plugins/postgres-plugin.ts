@@ -7,8 +7,9 @@ import Role from "../db/entities/Role"
 import Project from "../db/entities/Project"
 import Task from "../db/entities/Task"
 import Permission from "../db/entities/Permission"
+import { FastifyInstance } from "fastify"
 
-const postgresPlugin = fp(async (fastify) => {
+const postgresPlugin = fp(async (fastify: FastifyInstance) => {
   const datasource = new DataSource({
     type: "postgres",
     host: fastify.config.POSTGRES_HOST,

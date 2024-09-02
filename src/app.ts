@@ -10,6 +10,7 @@ import userRoutes from './modules/user/user.routes';
 import UserService from './modules/user/user.service';
 import RoleService from './modules/role/role.service';
 import PermissionService from './modules/permission/permission.service';
+import { authenticate, authorizeWithPermission } from './lib/auth';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -18,6 +19,8 @@ declare module 'fastify' {
     userService: UserService;
     roleService: RoleService;
     permissionService: PermissionService;
+    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    authorizeWithPermission: (permission: string) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
 }
 
@@ -36,6 +39,8 @@ const buildApp = async (): Promise<FastifyInstance> => {
   await app.register(fjwt, {
     secret: app.config.JWT_SECRET
   })
+  app.decorate('authenticate', authenticate)
+  app.decorate('authorizeWithPermission', authorizeWithPermission)
 
   // decorate services
   app.decorate('userService', new UserService(app.db))

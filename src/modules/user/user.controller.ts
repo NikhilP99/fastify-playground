@@ -3,6 +3,7 @@ import { IUserGetResponseBody, IUserLoginRequestBody, IUserLoginResponseBody, IU
 import User from "../../db/entities/User";
 import { InvalidRequestError, UnauthorizedRequestError } from "../../errors/errors";
 import Role from "../../db/entities/Role";
+import { createJwt } from "../../lib/auth";
 
 export const registerUser = async (app: FastifyInstance, user: IUserRegisterRequestBody) : Promise<IUserRegisterResponseBody> => {
   const userExists: boolean = await app.userService.userExists(user.email)
@@ -31,12 +32,10 @@ export const loginUser = async (app: FastifyInstance, loginRequest: IUserLoginRe
     throw new UnauthorizedRequestError(`Incorrect email or password`)
   }
   
-  const accessToken = app.jwt.sign({
+  const accessToken = createJwt(app, {
     issuer: 'playground',
     user: user.email,
-    role: user.role
-  },{
-    expiresIn: '1d',
+    role: user.role?.name
   })
 
   return {
@@ -57,8 +56,8 @@ export const getUser = async (app: FastifyInstance, email: string): Promise<IUse
   };
 }
 
-export const updateUserData = async (app: FastifyInstance, updateRequest: IUserUpdateRequestBody): Promise<IUserUpdateResponseBody> => {
-  const user: User = await getUserFromEmail(app, updateRequest.email)
+export const updateUserData = async (app: FastifyInstance, email: string, updateRequest: IUserUpdateRequestBody): Promise<IUserUpdateResponseBody> => {
+  const user: User = await getUserFromEmail(app, email)
 
   if(updateRequest.firstName){
     user.first_name = updateRequest.firstName.trim()
@@ -82,7 +81,7 @@ export const updateUserData = async (app: FastifyInstance, updateRequest: IUserU
 
 export const updateUserRole = async (app: FastifyInstance, updateRoleRequest: IUserUpdateRoleRequestBody): Promise<IUserUpdateRoleResponseBody> => {
   const user: User = await getUserFromEmail(app, updateRoleRequest.email)
-  const role: Role = await saveRoleIfNotExists(app, updateRoleRequest.role.trim())
+  const role: Role = await app.roleService.saveIfNotExists(updateRoleRequest.role.trim())
 
   user.role = role;
   await app.userService.saveUser(user)
@@ -101,15 +100,4 @@ const getUserFromEmail = async (app: FastifyInstance, email: string) => {
     throw new InvalidRequestError(`User - ${sanitizedEmail} doesn't exist.`)    
   }
   return user;
-}
-
-const saveRoleIfNotExists = async (app: FastifyInstance, roleName: string) : Promise<Role> => {
-  let role = await app.roleService.findRole(roleName)
-  if(!role){
-    role = new Role();
-    role.name = roleName;
-  
-    role = await app.roleService.saveRole(role);
-  }
-  return role;
 }

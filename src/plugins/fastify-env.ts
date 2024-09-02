@@ -1,5 +1,6 @@
 import fp from 'fastify-plugin'
 import fastifyEnv from '@fastify/env'
+import { FastifyInstance } from 'fastify'
 
 export interface EnvConfig {
   PORT: number
@@ -12,7 +13,7 @@ export interface EnvConfig {
   JWT_SECRET: string
 }
 
-const fastifyEnvPlugin = fp(async (fastify) => {
+const fastifyEnvPlugin = fp(async (fastify: FastifyInstance) => {
   const schema = {
     type: 'object',
     properties: {

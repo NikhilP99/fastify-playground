@@ -16,8 +16,13 @@ export default class RoleService {
   }
 
   public findRole = async (role: string): Promise<Role | null> => {
-    return await this.roleRepository.findOneBy({
-      name: role
+    return await this.roleRepository.findOne({
+      where: {
+        name: role
+      },
+      relations: {
+        permissions: true
+      }
     })
   }
 

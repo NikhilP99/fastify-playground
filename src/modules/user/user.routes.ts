@@ -1,6 +1,7 @@
 import { FastifyInstance, RouteGenericInterface } from "fastify";
 import { IUserGetParams, IUserGetRequestParamsSchema, IUserGetResponseBody, IUserGetResponseSchema, IUserLoginRequestBody, IUserLoginRequestSchema, IUserLoginResponseBody, IUserLoginResponseSchema, IUserRegisterRequestBody, IUserRegisterRequestSchema, IUserRegisterResponseBody, IUserRegisterResponseSchema, IUserUpdateRequestBody, IUserUpdateRequestSchema, IUserUpdateResponseBody, IUserUpdateResponseSchema, IUserUpdateRoleRequestBody, IUserUpdateRoleRequestSchema, IUserUpdateRoleResponseBody, IUserUpdateRoleResponseSchema } from "./user.schema";
 import { getUser, loginUser, registerUser, updateUserData, updateUserRole } from "./user.controller";
+import { PERMISSION } from "../../enums/permissions";
 
 const userRoutes = async (app: FastifyInstance) => {
 
@@ -37,6 +38,8 @@ const userRoutes = async (app: FastifyInstance) => {
         200: IUserGetResponseSchema
       }
     },
+    onRequest: [app.authenticate],
+    preHandler: [app.authorizeWithPermission(PERMISSION.USER_GET)],
     handler: async (request, reply) => {
       const { email } = request.params
       const registerResponse = await getUser(app, email);
@@ -51,8 +54,11 @@ const userRoutes = async (app: FastifyInstance) => {
         200: IUserUpdateResponseSchema
       }
     },
+    onRequest: [app.authenticate],
+    preHandler: [app.authorizeWithPermission(PERMISSION.USER_UPDATE)],
     handler: async (request, reply) => {
-      const registerResponse = await updateUserData(app, request.body);
+      const payload: any = request.user
+      const registerResponse = await updateUserData(app, payload.user, request.body);
       return reply.status(200).send(registerResponse);
     },
   });
@@ -64,6 +70,8 @@ const userRoutes = async (app: FastifyInstance) => {
         200: IUserUpdateRoleResponseSchema
       }
     },
+    onRequest: [app.authenticate],
+    preHandler: [app.authorizeWithPermission(PERMISSION.USER_ROLE_UPDATE)],
     handler: async (request, reply) => {
       const registerResponse = await updateUserRole(app, request.body);
       return reply.status(200).send(registerResponse);
